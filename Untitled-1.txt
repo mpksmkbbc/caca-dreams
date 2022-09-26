@@ -1,0 +1,20 @@
+{
+	"LIST": "SELECT count(*) over() AS total, max(receipt_detail.id) as id, travels.NAME, receipt_detail.tiket_name, SUM ( receipt_detail.jumlah ) AS jumlah, TRUNC(receipt_detail.tiket_price) as harga,SUM(receipt_detail.ket2) as total_diskon, SUM (receipt_detail.jumlah_harga) as subtotal, CONCAT(TRUNC(SUM(jumlah * receipt_detail.tiket_price))) as total_harga FROM receipt_detail INNER JOIN travels ON receipt_detail.user_id = travels.user_id WHERE receipt_detail.status = 'CLOSED' AND receipt_detail.is_union LIKE 'NO'  AND receipt_detail.user_id = '${USER_ID}' ${DATE_FILTER} ${SELECT_FILTER_1} GROUP BY travels.NAME, receipt_detail.user_id,tiket_name,receipt_detail.tiket_price ORDER BY receipt_detail.user_id  ${LIMIT_QUERY}",
+	"API": [
+	{"id": "ID"},
+	{"name": "NAME"},
+	{"tiket_name": "TIKET_NAME"},
+	{"jumlah": "JUMLAH"},
+	{"harga": "HARGA"},
+  {"total_diskon": "TOTAL_DISKON"},
+	{"subtotal": "SUBTOTAL"},
+	{"total_harga": "TOTAL_HARGA"}
+	],
+	"TABLE_HEADER": "{ id: { key: true, create: false, edit: false, list: false }, no: { title: \"No\", width: \"3%\", edit: false, create: false }, name: { title: \"Wisata\", edit: false, create: true}, harga: { title: \"Harga\", edit: false, create: true}, subtotal: { title: \"Subtotal\", edit: false, create: true},  total_diskon: { title: \"Total Diskon\", edit: false, create: true},  total_harga: { title: \"Total\", edit: false, create: true} }",
+	"FILTER": "",
+"LABEL_SEARCH": "",
+	"ACTIONS": ["LIST"],
+     "DATE_FILTER": "AND  created_at >= '${FILTERDATESTART}' AND created_at <= '${FILTERDATEEND}'",
+"SELECT_FILTER_1":"AND CASE WHEN UPPER('${SELECTVALUE_1}') LIKE UPPER('Tunai') THEN receipt_detail.pembayaran LIKE 'CASH' ELSE receipt_detail.pembayaran NOT LIKE 'CASH' END",
+"SELECT_OPTIONS_1":{LABEL: "Metode Pembayaran", SQL:"SELECT NAME FROM ( VALUES ( 'Tunai' ), ( 'Non Tunai' ) ) s( NAME )"}
+}

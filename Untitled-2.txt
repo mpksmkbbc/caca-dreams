@@ -1,0 +1,13 @@
+{
+	"LIST": "SELECT count(*) over() AS total, name AS id, name, SUM(CASE WHEN day IS NULL THEN 0 ELSE total END) as daily, SUM(CASE WHEN month IS NULL THEN 0 ELSE total END) as monthly, SUM(CASE WHEN year IS NULL THEN 0 ELSE total END) as yearly from ( select travels.name, CASE WHEN to_char(updated_at, 'DD-MM-YYYY') = to_char(now(), 'DD-MM-YYYY') THEN to_char(updated_at, 'DD-MM-YYYY') ELSE NULL END as day, CASE WHEN to_char(updated_at, 'MM-YYYY') = to_char(now(), 'MM-YYYY') THEN to_char(updated_at, 'MM-YYYY') ELSE NULL END as month, CASE WHEN to_char(updated_at, 'YYYY') = to_char(now(), 'YYYY') THEN to_char(updated_at, 'YYYY') ELSE NULL END as year, SUM(amount) as total from biller_ticket_transaction INNER JOIN travels ON biller_ticket_transaction.referral_user_id = travels.user_id AND travels.status = 'OPEN' WHERE biller_ticket_transaction.status = 'CLOSED' AND biller_ticket_transaction.is_union LIKE 'NO'  AND biller_ticket_transaction.referral_user_id = '${USER_ID}'GROUP BY GROUPING SETS ((name, 2), (name, 3), (name, 4)) ) s GROUP BY id ${LIMIT_QUERY}",
+	"API": [
+	{"id": "ID"},
+  {"name": "NAME"},
+	{"daily": "DAILY"},
+	{"monthly": "MONTHLY"},
+	{"yearly": "YEARLY"}
+	],
+	"TABLE_HEADER": "{ id: { key: true, create: false, edit: false, list: false }, no: { title: \"NO\", width: \"3%\", edit: false, create: false }, name: { title: \"MITRA\", create: true, edit: false }, daily: { title: \"HARIAN\", create: true, edit: false }, monthly: { title: \"BULANAN\", create: false, edit: false }, yearly: { title: \"TAHUNAN\", create: false, edit: false } }",
+	"ACTIONS": ["LIST"], 
+	"LABEL_SEARCH": "NO PETUGAS / NAMA PETUGAS"
+} 

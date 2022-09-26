@@ -1,0 +1,22 @@
+{
+"SQL_DETAIL": "SELECT count(id) over() AS total, id, path, receipant, user_id, status, created_at, updated_at, notify_type, message, subject FROM notify_report WHERE notify_report.id = ${id}",
+	"LIST": "SELECT count(id) over() AS total, id, path, receipant, user_id, status, created_at, updated_at, notify_type, message, subject FROM notify_report ${FILTER} ORDER BY notify_report.created_at DESC ${LIMIT_QUERY}",
+	"API": [
+  {"id": "ID"},
+  {"subject": "SUBJECT"},
+  {"user_id": "USER_ID"},
+	{"message": "MESSAGE"},
+  {"receipant": "RECEIPANT"},
+	{"path": "PATH"},
+	{"notify_type": "NOTIFY_TYPE"},
+	{"template": "TEMPLATE"},
+  {"created_at": "CREATED_AT"},
+  {"updated_at": "UPDATED_AT"},
+	{"status": "STATUS"}
+  ],
+	"TABLE_HEADER": "{ id: { key: true, create: false, edit: false, list: false }, ${DETAIL_1}, no: { title: \"NO\", width: \"3%\", edit: false, create: false }, receipant: { title: \"PENERIMA\" }, notify_type: { title: \"NOTIFIKASI\", width:\"3%\", options: \"apis/enums?group_id=25\"}, subject: { title: \"SUBJEK\" }, status: { title: \"STATUS\", width:\"3%\", options: \"apis/enums?group_id=27\" }, created_at: { title: \"TANGGAL\", width:\"3%\", create: false, edit: false } }",
+	"ACTIONS": ["LIST"],
+	"FILTER": "AND ( thoth_rules.name LIKE '%${SEARCHPHRASE}%')", 
+	"LABEL_SEARCH": "KODE / NAME",
+"DETAIL_1":"detail_1: { title: '', width: '5%', sorting: false, edit: false, create: false, display: function (recordData) { var $img = $('<a style=\"cursor: pointer;\"><i style=\"font-size: 20px;\" class=\"fa fa-list\"></i></a>'); $img.click(function () { $('#datatable_crud').jtable('openChildTable', $img.closest('tr'), { title: recordData.record.subject, actions: { listAction: 'apis/datatable?table=${TABLE}&action=SQL_DETAIL&id=' + recordData.record.id }, fields: { id: { type: 'hidden', defaultValue: recordData.record.id }, message: { title: \"PESAN\"} } }, function (data) { data.childTable.jtable('load'); }); }); return $img; } }"
+}  

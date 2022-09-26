@@ -1,0 +1,31 @@
+{
+	"SQL_DETAIL": "SELECT count(id) over() AS total, id, jumlah, ket3 AS discount, ket2 AS harga_discount, jumlah_harga, tiket_name FROM receipt_detail WHERE receipt_detail.no_tiket = '${bukti_bayar}'",
+	"LIST": "SELECT count(id) over() AS total, id, by_user_id, referral_user_id AS code, created_at, amount, trx_ppn, status, mobile_user_id AS user_cashlez, payment_methode, bukti_bayar, updated_at, message FROM biller_ticket_transaction WHERE payment_methode = 'CASH' ${DATE_FILTER} ${SELECT_FILTER_1} ${SELECT_FILTER_2} ${SELECT_FILTER_3} ORDER BY updated_at DESC ${LIMIT_QUERY}",
+	"API": [
+	{"id": "ID"},
+  {"status": "STATUS"},
+	{"by_user_id": "BY_USER_ID"},
+	{"amount": "AMOUNT"},
+	{"trx_ppn": "TRX_PPN"},
+	{"user_cashlez": "USER_CASHLEZ"},
+	{"payment_methode": "PAYMENT_METHODE"},
+	{"bukti_bayar": "BUKTI_BAYAR"},
+  {"status": "STATUS"},
+	{"code": "CODE"},
+	{"message": "MESSAGE"},
+	{"created_at": "CREATED_AT"},
+	{"updated_at": "UPDATED_AT"}
+	],
+	"TABLE_HEADER": "{ id: { key: true, create: false, edit: false, list: false }, ${DETAIL_1}, no: { title: \"NO\", width: \"3%\", edit: false, create: false }, code: { title: \"MERCHANT\", edit: false, create: true, options: \"apis/datalookup?group_id=tempat_wisata\"}, by_user_id: { title: \"USER\", options: \"apis/datalookup?group_id=users_doorman\", edit: false}, bukti_bayar: { title: \"NOMOR TRANSAKSI\", edit: false, create: true}, amount: { title: \"JUMLAH\", edit: false, create: true}, trx_ppn: { title: \"PAJAK\", edit: false, create: true}, payment_methode: { title: \"PEMBAYARAN\", edit: false, create: true}, status: { title: \"STATUS\", options: \"apis/enums?group_id=51_1_1\"}, created_at: { title: \"TANGGAL TRANSAKSI\", create: false, edit: false }}",
+	"UPDATE": "UPDATE biller_ticket_transaction SET status='${status}', updated_at=now()::timestamp(0) WHERE biller_ticket_transaction.id = ${id};UPDATE receipt_detail SET status = '${status}', updated_at = now()::timestamp(0) WHERE no_tiket = (SELECT bukti_bayar FROM  biller_ticket_transaction WHERE biller_ticket_transaction.id = ${id}); UPDATE receipt SET status_payment = '${status}', updated_at = now()::timestamp(0) WHERE no_tiket = (SELECT bukti_bayar FROM biller_ticket_transaction WHERE biller_ticket_transaction.id = ${id})",
+	"FILTER": "",
+	"ACTIONS": ["LIST", "UPDATE"],
+     "DATE_FILTER": "AND  created_at >= '${FILTERDATESTART}' AND created_at <= '${FILTERDATEEND}'",
+ "SELECT_OPTIONS_1":{LABEL: "MERCHANT", SQL:"SELECT name FROM travels WHERE status='OPEN'"},
+ "SELECT_FILTER_1":"AND referral_user_id = ( SELECT user_id FROM travels WHERE UPPER(travels.name) LIKE UPPER('%${SELECTVALUE_1}%'))",
+	"DETAIL_1":"detail_1: { title: '', width: '5%', sorting: false, edit: false, create: false, display: function (recordData) { var $img = $('<a style=\"cursor: pointer;\"><i style=\"font-size: 20px;\" class=\"fa fa-list\"></i></a>'); $img.click(function () { $('#datatable_crud').jtable('openChildTable', $img.closest('tr'), { title: recordData.record.subject, actions: { listAction: 'apis/datatable?table=${TABLE}&action=SQL_DETAIL&bukti_bayar=' + recordData.record.bukti_bayar+'&id='+ recordData.record.id }, fields: { id: { type: 'hidden', defaultValue: recordData.record.id }, tiket_name: { title: \"TIKET\"}, jumlah: { title: \"JUMLAH\"}, jumlah_harga: { title: \"HARGA\"}, discount: { title: \"DISKON\"} } }, function (data) { data.childTable.jtable('load'); }); }); return $img; } }",
+ "SELECT_OPTIONS_2":{LABEL: "STATUS", SQL:"SELECT count(id) over() AS total, key AS name FROM enums WHERE group_id LIKE '18_1' AND status LIKE 'ACTIVE'"},
+ "SELECT_FILTER_2":"AND UPPER(status) LIKE  UPPER('%${SELECTVALUE_2}%')",
+ "SELECT_OPTIONS_3":{LABEL: "USER", SQL:"SELECT CONCAT(first_name, ' ', last_name) AS name FROM users INNER JOIN user_privileges ON users.id = user_privileges.user_id WHERE users.status LIKE 'ACTIVE' AND role_id = '14'"},
+ "SELECT_FILTER_3":"AND by_user_id = ( SELECT id FROM users WHERE UPPER(CONCAT(first_name,' ', last_name)) LIKE UPPER('${SELECTVALUE_3}'))"
+}

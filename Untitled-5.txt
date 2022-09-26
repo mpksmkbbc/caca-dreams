@@ -1,0 +1,15 @@
+{
+	"LIST": "SELECT count(*) over() AS total, max(biller_ticket_transaction.id) as id, travels.NAME, SUM(amount) as total from biller_ticket_transaction INNER JOIN travels ON biller_ticket_transaction.referral_user_id = travels.user_id AND travels.status = 'OPEN' WHERE biller_ticket_transaction.status = 'CLOSED' AND biller_ticket_transaction.is_union LIKE 'NO'  AND biller_ticket_transaction.referral_user_id = '${USER_ID}' ${DATE_FILTER} ${SELECT_FILTER_1} GROUP BY travels.NAME, biller_ticket_transaction.referral_user_id ORDER BY biller_ticket_transaction.referral_user_id  ${LIMIT_QUERY}",
+	"API": [
+	{"id": "ID"},
+	{"name": "NAME"},
+	{"total_harga": "TOTAL_HARGA"}
+	],
+	"TABLE_HEADER": "{ id: { key: true, create: false, edit: false, list: false }, no: { title: \"No\", width: \"3%\", edit: false, create: false }, name: { title: \"MERCHANT\", edit: false, create: true}, total_harga: { title: \"Total\", edit: false, create: true} }",
+	"FILTER": "",
+"LABEL_SEARCH": "",
+	"ACTIONS": ["LIST"],
+     "DATE_FILTER": "AND  created_at >= '${FILTERDATESTART}' AND created_at <= '${FILTERDATEEND}'",
+"SELECT_FILTER_1":"AND CASE WHEN UPPER('${SELECTVALUE_1}') LIKE UPPER('Tunai') THEN receipt_detail.pembayaran LIKE 'CASH' ELSE receipt_detail.pembayaran NOT LIKE 'CASH' END",
+"SELECT_OPTIONS_1":{LABEL: "Metode Pembayaran", SQL:"SELECT NAME FROM ( VALUES ( 'Tunai' ), ( 'Non Tunai' ) ) s( NAME )"}
+}
